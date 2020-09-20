@@ -1,0 +1,26 @@
+enum RoleEnumType {
+  ADMINISTRATOR
+  NORMAL
+}
+
+directive @hasRole(role: RoleEnumType!) on FIELD_DEFINITION
+directive @auth on FIELD_DEFINITION
+
+type Operations
+	@hasRole(role: ADMINISTRATOR)
+	@auth {
+	show(input: Uint!): Uint
+}
+
+input UserLoginInput {
+	username: String!
+	password: String
+}
+
+type Mutation {
+	"""
+	System login
+	"""
+	login(input: UserLoginInput!): String
+	operations: Operations
+}

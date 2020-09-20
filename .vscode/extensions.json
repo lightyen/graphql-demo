@@ -1,0 +1,4 @@
+{
+    "recommendations": ["prisma.vscode-graphql"],
+    "unwantedRecommendations": []
+}

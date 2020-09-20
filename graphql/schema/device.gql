@@ -1,0 +1,16 @@
+type Device {
+	"""
+	Current IP.
+	"""
+	ip: IP!
+
+	"""
+	Current time.
+	"""
+	now: Time! @deprecated(reason: "Not supported.")
+
+	"""
+	說明
+	"""
+	description: String
+}

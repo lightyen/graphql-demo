@@ -1,0 +1,61 @@
+"""
+Represents IP address.
+"""
+scalar IP
+
+"""
+Represents unix timestamp.
+"""
+scalar Time
+
+"""
+Represents any json object.
+"""
+scalar Any
+
+"""
+Represents a `NULL` value.
+"""
+scalar Void
+
+"""
+Represents a 64-bit signed integer.
+"""
+scalar Int64
+
+"""
+Represents a 32-bit signed integer.
+"""
+scalar Int32
+
+"""
+Represents a 16-bit signed integer.
+"""
+scalar Int16
+
+"""
+Represents a 8-bit signed integer.
+"""
+scalar Int8
+
+"""
+Represents a 64-bit unsigned integer.
+"""
+scalar Uint64
+
+"""
+Represents a 32-bit unsigned integer.
+"""
+scalar Uint32
+
+"""
+Represents a 16-bit unsigned integer.
+"""
+scalar Uint16
+
+"""
+Represents a 8-bit unsigned integer.
+"""
+scalar Uint8
+
+scalar Uint

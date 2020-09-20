@@ -1,0 +1,4 @@
+app.exe
+app
+web/**/*
+!web/README.md
