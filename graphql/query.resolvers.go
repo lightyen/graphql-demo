@@ -4,14 +4,14 @@ package graphql
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
+	"app/common"
 	"app/graphql/generated"
-	"app/graphql/model"
 	"context"
 	"strings"
 )
 
-func (r *queryResolver) Device(ctx context.Context) (*model.Device, error) {
-	return &model.Device{}, nil
+func (r *queryResolver) Device(ctx context.Context) (*common.Device, error) {
+	return &common.Device{}, nil
 }
 
 func (r *queryResolver) Search(ctx context.Context, text string) ([]string, error) {

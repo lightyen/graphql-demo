@@ -1,4 +1,4 @@
-package scalar
+package common
 
 import (
 	"fmt"
@@ -23,44 +23,19 @@ func MarshalInt64(i int64) graphql.Marshaler {
 	})
 }
 
-func MarshalInt32(i int32) graphql.Marshaler {
-	return MarshalInt64(int64(i))
-}
-
-func MarshalInt16(i int16) graphql.Marshaler {
-	return MarshalInt64(int64(i))
-}
-
-func MarshalInt8(i int8) graphql.Marshaler {
-	return MarshalInt64(int64(i))
-}
-
-func MarshalUint64(i uint64) graphql.Marshaler {
-	return graphql.WriterFunc(func(w io.Writer) {
-		_, _ = w.Write([]byte(strconv.FormatUint(i, 10)))
-	})
-}
-
-func MarshalUint32(i uint32) graphql.Marshaler {
-	return MarshalUint64(uint64(i))
-}
-
-func MarshalUint16(i uint16) graphql.Marshaler {
-	return MarshalUint64(uint64(i))
-}
-
-func MarshalUint8(i uint8) graphql.Marshaler {
-	return MarshalUint64(uint64(i))
-}
-
 func UnmarshalInt64(v interface{}) (int64, error) {
 	switch t := v.(type) {
 	case string:
+		fmt.Println(t)
 		return strconv.ParseInt(t, 10, 64)
 	case int64:
 		return int64(t), nil
 	}
 	return 0, fmt.Errorf("Unable unmarshal %T to Int64: %#v", v, v)
+}
+
+func MarshalInt32(i int32) graphql.Marshaler {
+	return MarshalInt64(int64(i))
 }
 
 func UnmarshalInt32(v interface{}) (int32, error) {
@@ -74,6 +49,10 @@ func UnmarshalInt32(v interface{}) (int32, error) {
 	return 0, fmt.Errorf("Unable unmarshal %T to Int32: %#v", v, v)
 }
 
+func MarshalInt16(i int16) graphql.Marshaler {
+	return MarshalInt64(int64(i))
+}
+
 func UnmarshalInt16(v interface{}) (int16, error) {
 	switch t := v.(type) {
 	case string:
@@ -83,6 +62,10 @@ func UnmarshalInt16(v interface{}) (int16, error) {
 		return int16(t), nil
 	}
 	return 0, fmt.Errorf("Unable unmarshal %T to Int16: %#v", v, v)
+}
+
+func MarshalInt8(i int8) graphql.Marshaler {
+	return MarshalInt64(int64(i))
 }
 
 func UnmarshalInt8(v interface{}) (int8, error) {
@@ -96,6 +79,12 @@ func UnmarshalInt8(v interface{}) (int8, error) {
 	return 0, fmt.Errorf("Unable unmarshal %T to Int8: %#v", v, v)
 }
 
+func MarshalUint64(i uint64) graphql.Marshaler {
+	return graphql.WriterFunc(func(w io.Writer) {
+		_, _ = w.Write([]byte(strconv.FormatUint(i, 10)))
+	})
+}
+
 func UnmarshalUint64(v interface{}) (uint64, error) {
 	switch t := v.(type) {
 	case string:
@@ -104,6 +93,10 @@ func UnmarshalUint64(v interface{}) (uint64, error) {
 		return uint64(t), nil
 	}
 	return 0, fmt.Errorf("Unable unmarshal %T to Uint64: %#v", v, v)
+}
+
+func MarshalUint32(i uint32) graphql.Marshaler {
+	return MarshalUint64(uint64(i))
 }
 
 func UnmarshalUint32(v interface{}) (uint32, error) {
@@ -117,6 +110,10 @@ func UnmarshalUint32(v interface{}) (uint32, error) {
 	return 0, fmt.Errorf("Unable unmarshal %T to Uint32: %#v", v, v)
 }
 
+func MarshalUint16(i uint16) graphql.Marshaler {
+	return MarshalUint64(uint64(i))
+}
+
 func UnmarshalUint16(v interface{}) (uint16, error) {
 	switch t := v.(type) {
 	case string:
@@ -126,6 +123,10 @@ func UnmarshalUint16(v interface{}) (uint16, error) {
 		return uint16(t), nil
 	}
 	return 0, fmt.Errorf("Unable unmarshal %T to Uint16: %#v", v, v)
+}
+
+func MarshalUint8(i uint8) graphql.Marshaler {
+	return MarshalUint64(uint64(i))
 }
 
 func UnmarshalUint8(v interface{}) (uint8, error) {

@@ -2,7 +2,6 @@ package graphql
 
 import (
 	"app/graphql/generated"
-	"app/graphql/model"
 	"app/internal/auth"
 	"context"
 	"errors"
@@ -24,7 +23,7 @@ func GinContextToContextMiddleware() gin.HandlerFunc {
 }
 
 type CustomClaims struct {
-	Role model.RoleEnumType
+	Role generated.RoleEnumType
 	jwt.StandardClaims
 }
 
@@ -42,9 +41,9 @@ func NewHandler() gin.HandlerFunc {
 		}
 		return next(context.WithValue(ctx, RoleKey{}, claims.Role))
 	}
-	hasRole := func(ctx context.Context, obj interface{}, next graphql.Resolver, role model.RoleEnumType) (res interface{}, err error) {
-		userRole := ctx.Value(RoleKey{}).(model.RoleEnumType)
-		if role == model.RoleEnumTypeAdministrator && userRole != model.RoleEnumTypeAdministrator {
+	hasRole := func(ctx context.Context, obj interface{}, next graphql.Resolver, role generated.RoleEnumType) (res interface{}, err error) {
+		userRole := ctx.Value(RoleKey{}).(generated.RoleEnumType)
+		if role == generated.RoleEnumTypeAdministrator && userRole != generated.RoleEnumTypeAdministrator {
 			return nil, ErrForbidden
 		}
 		return next(ctx)

@@ -5,7 +5,6 @@ package graphql
 
 import (
 	"app/graphql/generated"
-	"app/graphql/model"
 	"app/internal/auth"
 	"context"
 	"net/http"
@@ -15,7 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (r *mutationResolver) Login(ctx context.Context, input model.UserLoginInput) (*string, error) {
+func (r *mutationResolver) Login(ctx context.Context, input generated.UserLoginInput) (*string, error) {
 	if input.Username != "guest" && input.Password == nil {
 		return nil, ErrAuthentication
 	}
@@ -25,9 +24,9 @@ func (r *mutationResolver) Login(ctx context.Context, input model.UserLoginInput
 	}
 	c := ctx.Value(GinContextKey{}).(*gin.Context)
 
-	role := model.RoleEnumTypeNormal
+	role := generated.RoleEnumTypeNormal
 	if input.Username == "lightyen" {
-		role = model.RoleEnumTypeAdministrator
+		role = generated.RoleEnumTypeAdministrator
 	}
 	now := time.Now()
 	tokenString, err := auth.SignJwt(&CustomClaims{
@@ -57,11 +56,11 @@ func (r *mutationResolver) Login(ctx context.Context, input model.UserLoginInput
 	return &tk, nil
 }
 
-func (r *mutationResolver) Operations(ctx context.Context) (*model.Operations, error) {
-	return &model.Operations{}, nil
+func (r *mutationResolver) Operations(ctx context.Context) (*generated.Operations, error) {
+	return &generated.Operations{}, nil
 }
 
-func (r *operationsResolver) Show(ctx context.Context, obj *model.Operations, input uint) (*uint, error) {
+func (r *operationsResolver) Show(ctx context.Context, obj *generated.Operations, input uint) (*uint, error) {
 	return &input, nil
 }
 

@@ -1,6 +1,6 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - graphql/schema/**/*.gql
+  - schema/**/*.gql
 
 # Where should the generated server code go?
 exec:
@@ -14,8 +14,8 @@ exec:
 
 # Where should any generated models go?
 model:
-  filename: graphql/model/generated.go
-  package: model
+  filename: graphql/generated/models.go
+  package: generated
 
 # Where should the resolver implementations go?
 resolver:
@@ -36,7 +36,7 @@ omit_slice_element_pointers: true
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 # autobind:
-#   - "app/store"
+#   - "app/common"
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -45,31 +45,31 @@ omit_slice_element_pointers: true
 # your liking
 models:
   Uint:
-    model: app/graphql/model/scalar.Uint
+    model: app/common.Uint
   Int64:
-    model: app/graphql/model/scalar.Int64
+    model: app/common.Int64
   Int32:
-    model: app/graphql/model/scalar.Int32
+    model: app/common.Int32
   Int16:
-    model: app/graphql/model/scalar.Int16
+    model: app/common.Int16
   Int8:
-    model: app/graphql/model/scalar.Int8
+    model: app/common.Int8
   Uint64:
-    model: app/graphql/model/scalar.Uint64
+    model: app/common.Uint64
   Uint32:
-    model: app/graphql/model/scalar.Uint32
+    model: app/common.Uint32
   Uint16:
-    model: app/graphql/model/scalar.Uint16
+    model: app/common.Uint16
   Uint8:
-    model: app/graphql/model/scalar.Uint8
+    model: app/common.Uint8
   Void:
-    model: app/graphql/model/scalar.Void
+    model: app/common.Void
   IP:
-    model: app/graphql/model/scalar.IP
+    model: app/common.IP
   Time:
-    model: app/graphql/model/scalar.Time
+    model: app/common.Time
   Device:
-    model: app/graphql/model.Device
+    model: app/common.Device
     fields:
       ip:
         resolver: true
