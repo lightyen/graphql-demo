@@ -9,7 +9,7 @@ import (
 )
 
 type Operations struct {
-	Show *uint `json:"show"`
+	Show *int `json:"show"`
 }
 
 type UserLoginInput struct {

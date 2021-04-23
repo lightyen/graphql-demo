@@ -13,4 +13,6 @@ type Device {
 	說明
 	"""
 	description: String
+
+	count(param: Int64!): String!
 }

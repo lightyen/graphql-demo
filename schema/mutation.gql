@@ -9,7 +9,7 @@ directive @auth on FIELD_DEFINITION
 type Operations
 	@hasRole(role: ADMINISTRATOR)
 	@auth {
-	show(input: Uint!): Uint
+	show(input: Int!): Int
 }
 
 input UserLoginInput {

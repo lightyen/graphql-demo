@@ -4,7 +4,7 @@ import (
 	"app/graphql/generated"
 	"app/internal/auth"
 	"context"
-	"errors"
+	"fmt"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -57,7 +57,7 @@ func NewHandler() gin.HandlerFunc {
 	}
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(c))
 	srv.SetRecoverFunc(func(ctx context.Context, err interface{}) error {
-		return errors.New("Internal server error")
+		return fmt.Errorf("%s", err)
 	})
 	return func(c *gin.Context) {
 		ctx := context.WithValue(c.Request.Context(), GinContextKey{}, c)

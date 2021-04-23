@@ -65,7 +65,7 @@ func (r *mutationResolver) SingleUpload(ctx context.Context, file graphql.Upload
 	return file.Filename, nil
 }
 
-func (r *operationsResolver) Show(ctx context.Context, obj *generated.Operations, input uint) (*uint, error) {
+func (r *operationsResolver) Show(ctx context.Context, obj *generated.Operations, input int) (*int, error) {
 	return &input, nil
 }
 

@@ -7,6 +7,7 @@ import (
 	"app/common"
 	"app/graphql/generated"
 	"context"
+	"fmt"
 	"net"
 	"time"
 )
@@ -23,6 +24,10 @@ func (r *deviceResolver) Now(ctx context.Context, obj *common.Device) (*time.Tim
 func (r *deviceResolver) Description(ctx context.Context, obj *common.Device) (*string, error) {
 	s := "helloworld"
 	return &s, nil
+}
+
+func (r *deviceResolver) Count(ctx context.Context, obj *common.Device, param int64) (string, error) {
+	return "", fmt.Errorf("not implemented")
 }
 
 // Device returns generated.DeviceResolver implementation.

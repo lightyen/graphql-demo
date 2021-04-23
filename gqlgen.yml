@@ -14,7 +14,7 @@ exec:
 
 # Where should any generated models go?
 model:
-  filename: graphql/generated/models.go
+  filename: graphql/generated/models_gen.go
   package: generated
 
 # Where should the resolver implementations go?
@@ -46,8 +46,6 @@ omit_slice_element_pointers: true
 models:
   Bool:
     model: app/common.Bool
-  Uint:
-    model: app/common.Uint
   Int64:
     model: app/common.Int64
   Int32:
@@ -56,14 +54,6 @@ models:
     model: app/common.Int16
   Int8:
     model: app/common.Int8
-  Uint64:
-    model: app/common.Uint64
-  Uint32:
-    model: app/common.Uint32
-  Uint16:
-    model: app/common.Uint16
-  Uint8:
-    model: app/common.Uint8
   Void:
     model: app/common.Void
   Upload:

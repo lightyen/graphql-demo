@@ -51,6 +51,7 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Device struct {
+		Count       func(childComplexity int, param int64) int
 		Description func(childComplexity int) int
 		IP          func(childComplexity int) int
 		Now         func(childComplexity int) int
@@ -63,7 +64,7 @@ type ComplexityRoot struct {
 	}
 
 	Operations struct {
-		Show func(childComplexity int, input uint) int
+		Show func(childComplexity int, input int) int
 	}
 
 	Query struct {
@@ -76,6 +77,7 @@ type DeviceResolver interface {
 	IP(ctx context.Context, obj *common.Device) (net.IP, error)
 	Now(ctx context.Context, obj *common.Device) (*time.Time, error)
 	Description(ctx context.Context, obj *common.Device) (*string, error)
+	Count(ctx context.Context, obj *common.Device, param int64) (string, error)
 }
 type MutationResolver interface {
 	Login(ctx context.Context, input UserLoginInput) (*string, error)
@@ -83,7 +85,7 @@ type MutationResolver interface {
 	SingleUpload(ctx context.Context, file graphql.Upload) (string, error)
 }
 type OperationsResolver interface {
-	Show(ctx context.Context, obj *Operations, input uint) (*uint, error)
+	Show(ctx context.Context, obj *Operations, input int) (*int, error)
 }
 type QueryResolver interface {
 	Device(ctx context.Context) (*common.Device, error)
@@ -104,6 +106,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Device.count":
+		if e.complexity.Device.Count == nil {
+			break
+		}
+
+		args, err := ec.field_Device_count_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Device.Count(childComplexity, args["param"].(int64)), true
 
 	case "Device.description":
 		if e.complexity.Device.Description == nil {
@@ -167,7 +181,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Operations.Show(childComplexity, args["input"].(uint)), true
+		return e.complexity.Operations.Show(childComplexity, args["input"].(int)), true
 
 	case "Query.device":
 		if e.complexity.Query.Device == nil {
@@ -267,6 +281,8 @@ var sources = []*ast.Source{
 	說明
 	"""
 	description: String
+
+	count(param: Int64!): String!
 }
 `, BuiltIn: false},
 	{Name: "schema/mutation.gql", Input: `enum RoleEnumType {
@@ -280,7 +296,7 @@ directive @auth on FIELD_DEFINITION
 type Operations
 	@hasRole(role: ADMINISTRATOR)
 	@auth {
-	show(input: Uint!): Uint
+	show(input: Int!): Int
 }
 
 input UserLoginInput {
@@ -342,32 +358,13 @@ Represents a 8-bit signed integer.
 scalar Int8
 
 """
-Represents a 64-bit unsigned integer.
-"""
-scalar Uint64
-
-"""
-Represents a 32-bit unsigned integer.
-"""
-scalar Uint32
-
-"""
-Represents a 16-bit unsigned integer.
-"""
-scalar Uint16
-
-"""
-Represents a 8-bit unsigned integer.
-"""
-scalar Uint8
-
-"""
 Represents a boolean type.
 """
 scalar Bool
 
-scalar Uint
-
+"""
+Represents an upload File.
+"""
 scalar Upload`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -388,6 +385,21 @@ func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[st
 		}
 	}
 	args["role"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Device_count_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int64
+	if tmp, ok := rawArgs["param"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("param"))
+		arg0, err = ec.unmarshalNInt642int64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["param"] = arg0
 	return args, nil
 }
 
@@ -424,10 +436,10 @@ func (ec *executionContext) field_Mutation_singleUpload_args(ctx context.Context
 func (ec *executionContext) field_Operations_show_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 uint
+	var arg0 int
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUint2uint(ctx, tmp)
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -606,6 +618,48 @@ func (ec *executionContext) _Device_description(ctx context.Context, field graph
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Device_count(ctx context.Context, field graphql.CollectedField, obj *common.Device) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Device",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Device_count_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Device().Count(rctx, obj, args["param"].(int64))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -774,7 +828,7 @@ func (ec *executionContext) _Operations_show(ctx context.Context, field graphql.
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Operations().Show(rctx, obj, args["input"].(uint))
+		return ec.resolvers.Operations().Show(rctx, obj, args["input"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -783,9 +837,9 @@ func (ec *executionContext) _Operations_show(ctx context.Context, field graphql.
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*uint)
+	res := resTmp.(*int)
 	fc.Result = res
-	return ec.marshalOUint2ᚖuint(ctx, field.Selections, res)
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_device(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2109,6 +2163,20 @@ func (ec *executionContext) _Device(ctx context.Context, sel ast.SelectionSet, o
 				res = ec._Device_description(ctx, field, obj)
 				return res
 			})
+		case "count":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Device_count(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2541,6 +2609,36 @@ func (ec *executionContext) marshalNIP2netᚐIP(ctx context.Context, sel ast.Sel
 	return res
 }
 
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNInt642int64(ctx context.Context, v interface{}) (int64, error) {
+	res, err := common.UnmarshalInt64(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt642int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
+	res := common.MarshalInt64(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNRoleEnumType2appᚋgraphqlᚋgeneratedᚐRoleEnumType(ctx context.Context, v interface{}) (RoleEnumType, error) {
 	var res RoleEnumType
 	err := res.UnmarshalGQL(v)
@@ -2624,21 +2722,6 @@ func (ec *executionContext) marshalNTime2ᚖtimeᚐTime(ctx context.Context, sel
 		return graphql.Null
 	}
 	res := common.MarshalTime(*v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
-}
-
-func (ec *executionContext) unmarshalNUint2uint(ctx context.Context, v interface{}) (uint, error) {
-	res, err := common.UnmarshalUint(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNUint2uint(ctx context.Context, sel ast.SelectionSet, v uint) graphql.Marshaler {
-	res := common.MarshalUint(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -2920,6 +3003,21 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*v)
+}
+
 func (ec *executionContext) marshalOOperations2ᚖappᚋgraphqlᚋgeneratedᚐOperations(ctx context.Context, sel ast.SelectionSet, v *Operations) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -2949,21 +3047,6 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	return graphql.MarshalString(*v)
-}
-
-func (ec *executionContext) unmarshalOUint2ᚖuint(ctx context.Context, v interface{}) (*uint, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := common.UnmarshalUint(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOUint2ᚖuint(ctx context.Context, sel ast.SelectionSet, v *uint) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return common.MarshalUint(*v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

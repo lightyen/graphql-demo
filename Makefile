@@ -16,9 +16,8 @@ endif
 all: currplatform
 
 currplatform:
-	go install github.com/99designs/gqlgen@v0.13.0
-	@echo "building app for ${PLATFORM_OS}-${PLATFORM_ARCH}"
 	go mod tidy
+	@echo "building app for ${PLATFORM_OS}-${PLATFORM_ARCH}"
 	gqlgen
 	$(GO_BUILD) -ldflags="${LDFLAGS}" -o $(APP_NAME) $(PKG_NAME)
 
@@ -31,3 +30,11 @@ ifeq ($(GO_VENDER), 1)
 else
 	golangci-lint run --enable golint
 endif
+
+init:
+	go install github.com/99designs/gqlgen@v0.13.0
+	go get -d github.com/99designs/gqlgen@v0.13.0
+ifeq ($(GO_VENDER), 1)
+	go mod vendor
+endif
+	

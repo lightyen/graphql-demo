@@ -39,30 +39,11 @@ Represents a 8-bit signed integer.
 scalar Int8
 
 """
-Represents a 64-bit unsigned integer.
-"""
-scalar Uint64
-
-"""
-Represents a 32-bit unsigned integer.
-"""
-scalar Uint32
-
-"""
-Represents a 16-bit unsigned integer.
-"""
-scalar Uint16
-
-"""
-Represents a 8-bit unsigned integer.
-"""
-scalar Uint8
-
-"""
 Represents a boolean type.
 """
 scalar Bool
 
-scalar Uint
-
+"""
+Represents an upload File.
+"""
 scalar Upload
