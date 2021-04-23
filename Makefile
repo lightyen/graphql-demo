@@ -16,6 +16,7 @@ endif
 all: currplatform
 
 currplatform:
+	go install github.com/99designs/gqlgen@v0.13.0
 	@echo "building app for ${PLATFORM_OS}-${PLATFORM_ARCH}"
 	go mod tidy
 	gqlgen
