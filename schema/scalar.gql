@@ -58,4 +58,11 @@ Represents a 8-bit unsigned integer.
 """
 scalar Uint8
 
+"""
+Represents a boolean type.
+"""
+scalar Bool
+
 scalar Uint
+
+scalar Upload

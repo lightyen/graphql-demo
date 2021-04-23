@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
@@ -58,6 +59,10 @@ func (r *mutationResolver) Login(ctx context.Context, input generated.UserLoginI
 
 func (r *mutationResolver) Operations(ctx context.Context) (*generated.Operations, error) {
 	return &generated.Operations{}, nil
+}
+
+func (r *mutationResolver) SingleUpload(ctx context.Context, file graphql.Upload) (string, error) {
+	return file.Filename, nil
 }
 
 func (r *operationsResolver) Show(ctx context.Context, obj *generated.Operations, input uint) (*uint, error) {

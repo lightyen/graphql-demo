@@ -44,6 +44,8 @@ omit_slice_element_pointers: true
 # modelgen, the others will be allowed when binding to fields. Configure them to
 # your liking
 models:
+  Bool:
+    model: app/common.Bool
   Uint:
     model: app/common.Uint
   Int64:
@@ -64,6 +66,8 @@ models:
     model: app/common.Uint8
   Void:
     model: app/common.Void
+  Upload:
+    model: github.com/99designs/gqlgen/graphql.Upload
   IP:
     model: app/common.IP
   Time:

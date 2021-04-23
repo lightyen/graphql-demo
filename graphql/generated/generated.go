@@ -57,8 +57,9 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		Login      func(childComplexity int, input UserLoginInput) int
-		Operations func(childComplexity int) int
+		Login        func(childComplexity int, input UserLoginInput) int
+		Operations   func(childComplexity int) int
+		SingleUpload func(childComplexity int, file graphql.Upload) int
 	}
 
 	Operations struct {
@@ -79,6 +80,7 @@ type DeviceResolver interface {
 type MutationResolver interface {
 	Login(ctx context.Context, input UserLoginInput) (*string, error)
 	Operations(ctx context.Context) (*Operations, error)
+	SingleUpload(ctx context.Context, file graphql.Upload) (string, error)
 }
 type OperationsResolver interface {
 	Show(ctx context.Context, obj *Operations, input uint) (*uint, error)
@@ -142,6 +144,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.Operations(childComplexity), true
+
+	case "Mutation.singleUpload":
+		if e.complexity.Mutation.SingleUpload == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_singleUpload_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SingleUpload(childComplexity, args["file"].(graphql.Upload)), true
 
 	case "Operations.show":
 		if e.complexity.Operations.Show == nil {
@@ -280,6 +294,7 @@ type Mutation {
 	"""
 	login(input: UserLoginInput!): String
 	operations: Operations
+	singleUpload(file: Upload!): String!
 }`, BuiltIn: false},
 	{Name: "schema/query.gql", Input: `type Query {
 	device: Device!
@@ -346,7 +361,14 @@ Represents a 8-bit unsigned integer.
 """
 scalar Uint8
 
-scalar Uint`, BuiltIn: false},
+"""
+Represents a boolean type.
+"""
+scalar Bool
+
+scalar Uint
+
+scalar Upload`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -381,6 +403,21 @@ func (ec *executionContext) field_Mutation_login_args(ctx context.Context, rawAr
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_singleUpload_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 graphql.Upload
+	if tmp, ok := rawArgs["file"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("file"))
+		arg0, err = ec.unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["file"] = arg0
 	return args, nil
 }
 
@@ -668,6 +705,48 @@ func (ec *executionContext) _Mutation_operations(ctx context.Context, field grap
 	res := resTmp.(*Operations)
 	fc.Result = res
 	return ec.marshalOOperations2ᚖappᚋgraphqlᚋgeneratedᚐOperations(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_singleUpload(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_singleUpload_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SingleUpload(rctx, args["file"].(graphql.Upload))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Operations_show(ctx context.Context, field graphql.CollectedField, obj *Operations) (ret graphql.Marshaler) {
@@ -2060,6 +2139,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_login(ctx, field)
 		case "operations":
 			out.Values[i] = ec._Mutation_operations(ctx, field)
+		case "singleUpload":
+			out.Values[i] = ec._Mutation_singleUpload(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2555,6 +2639,21 @@ func (ec *executionContext) unmarshalNUint2uint(ctx context.Context, v interface
 
 func (ec *executionContext) marshalNUint2uint(ctx context.Context, sel ast.SelectionSet, v uint) graphql.Marshaler {
 	res := common.MarshalUint(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, v interface{}) (graphql.Upload, error) {
+	res, err := graphql.UnmarshalUpload(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, sel ast.SelectionSet, v graphql.Upload) graphql.Marshaler {
+	res := graphql.MarshalUpload(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

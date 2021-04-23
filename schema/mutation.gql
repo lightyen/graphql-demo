@@ -23,4 +23,5 @@ type Mutation {
 	"""
 	login(input: UserLoginInput!): String
 	operations: Operations
+	singleUpload(file: Upload!): String!
 }

@@ -1,5 +1,5 @@
 GO_BUILD := go build
-GO_VENDER := 0
+GO_VENDER := 1
 LDFLAGS := -s -w
 
 DATE := $(shell date +%Y%m%d)
@@ -10,7 +10,7 @@ PKG_NAME := app
 APP_NAME := app
 
 ifeq ($(GO_VENDER), 1)
-GO_BUILD = $(GO_BUILD) -mod=vendor
+GO_BUILD = go build -mod=vendor
 endif
 
 all: currplatform
