@@ -8,6 +8,9 @@ Represents unix timestamp.
 """
 scalar Time
 
+
+scalar UUID
+
 """
 Represents any json object.
 """

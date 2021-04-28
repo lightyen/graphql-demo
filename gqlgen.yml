@@ -56,6 +56,8 @@ models:
     model: app/common.Int8
   Void:
     model: app/common.Void
+  UUID:
+    model: app/common.UUID
   Upload:
     model: github.com/99designs/gqlgen/graphql.Upload
   IP:

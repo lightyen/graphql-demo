@@ -9,15 +9,14 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"time"
 )
 
 func (r *deviceResolver) IP(ctx context.Context, obj *common.Device) (net.IP, error) {
 	return net.ParseIP("127.0.0.1"), nil
 }
 
-func (r *deviceResolver) Now(ctx context.Context, obj *common.Device) (*time.Time, error) {
-	t := time.Now()
+func (r *deviceResolver) Now(ctx context.Context, obj *common.Device) (*common.Time, error) {
+	t := common.Now()
 	return &t, nil
 }
 
