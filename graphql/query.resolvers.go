@@ -7,18 +7,14 @@ import (
 	"app/common"
 	"app/graphql/generated"
 	"context"
-	"strings"
 )
 
 func (r *queryResolver) Device(ctx context.Context) (*common.Device, error) {
 	return &common.Device{}, nil
 }
 
-func (r *queryResolver) Search(ctx context.Context, text string) ([]string, error) {
-	if strings.HasPrefix(text, "tw") {
-		return []string{"hello", "world"}, nil
-	}
-	return []string{"helloworld"}, nil
+func (r *queryResolver) Test(ctx context.Context, id common.UUID) (interface{}, error) {
+	return &common.Void{}, nil
 }
 
 // Query returns generated.QueryResolver implementation.

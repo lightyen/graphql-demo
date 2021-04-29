@@ -8,9 +8,6 @@ Represents unix timestamp.
 """
 scalar Time
 
-
-scalar UUID
-
 """
 Represents any json object.
 """
@@ -50,3 +47,5 @@ scalar Bool
 Represents an upload File.
 """
 scalar Upload
+
+scalar UUID

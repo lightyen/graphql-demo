@@ -1,18 +1,22 @@
 package common
 
 import (
+	"encoding/json"
 	"io"
 
 	"github.com/99designs/gqlgen/graphql"
 )
 
+type Void struct{}
+
 func MarshalVoid(v interface{}) graphql.Marshaler {
 	return graphql.WriterFunc(func(w io.Writer) {
-		// do nothing
+		data, _ := json.Marshal(v)
+		_, _ = w.Write(data)
 	})
 }
 
-func UnmarshalVoid(v interface{}) (interface{}, error) {
+func UnmarshalVoid(v interface{}) (Void, error) {
 	// do nothing
-	return nil, nil
+	return Void{}, nil
 }

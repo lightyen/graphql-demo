@@ -1,4 +1,4 @@
 type Query {
 	device: Device!
-	search(text: String!): [String!]!
+	test(id: UUID!): Void
 }

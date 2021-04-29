@@ -65,7 +65,7 @@ func (uuid *UUID) UnmarshalText(data []byte) error {
 	return uuid.hexDecode(data)
 }
 
-func (uuid *UUID) String() string {
+func (uuid UUID) String() string {
 	t, _ := uuid.MarshalText()
 	return string(t)
 }
