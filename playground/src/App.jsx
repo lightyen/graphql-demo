@@ -14,7 +14,7 @@ const Wrapper = () => {
 			dispatch(setSettingsString(JSON.stringify(settings, null, 2)))
 		}
 	}, [dispatch, settings])
-	return <Playground endpoint="/graphql" subscriptionEndpoint="/subscriptions" />
+	return <Playground endpoint="/graphql" subscriptionEndpoint="/graphql" />
 }
 
 export default () => {

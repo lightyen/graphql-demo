@@ -2,7 +2,9 @@ package server
 
 import (
 	"app/graphql"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -14,20 +16,18 @@ func NewRouter() http.Handler {
 	// handle graphql
 	h := graphql.NewHandler()
 	e.POST("/graphql", h)
-	e.GET("/subscriptions", h)
-	e.POST("/subscriptions", h)
-
-	// handle graphql subscription(websocket)
-	// e.GET("/subscriptions", func(c *gin.Context) {
-	// 	if c.Request.Header.Get("Sec-WebSocket-Protocol") != "graphql-ws" {
-	// 		c.Status(http.StatusNotFound)
-	// 		return
-	// 	}
-	// })
-
-	// handle graphql playground
+	web := static.Serve("/graphql", static.LocalFile("web", false))
+	e.GET("/graphql", func(c *gin.Context) {
+		accept := c.Request.Header.Get("Accept")
+		fmt.Println(accept)
+		if strings.Contains(accept, "text/html") {
+			web(c)
+			return
+		}
+		h(c)
+	})
 	e.GET("/", func(c *gin.Context) { c.Redirect(http.StatusFound, "/graphql") })
-	e.NoRoute(static.Serve("/graphql", static.LocalFile("web", false)))
+	e.NoRoute(web)
 
 	return e
 }
