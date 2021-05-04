@@ -2,7 +2,6 @@ package server
 
 import (
 	"app/graphql"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -19,7 +18,6 @@ func NewRouter() http.Handler {
 	web := static.Serve("/graphql", static.LocalFile("web", false))
 	e.GET("/graphql", func(c *gin.Context) {
 		accept := c.Request.Header.Get("Accept")
-		fmt.Println(accept)
 		if strings.Contains(accept, "text/html") {
 			web(c)
 			return
