@@ -8,7 +8,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -50,7 +49,7 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Device struct {
-		Count       func(childComplexity int, param int64) int
+		Count       func(childComplexity int, param string) int
 		Description func(childComplexity int) int
 		IP          func(childComplexity int) int
 		Now         func(childComplexity int) int
@@ -73,10 +72,10 @@ type ComplexityRoot struct {
 }
 
 type DeviceResolver interface {
-	IP(ctx context.Context, obj *common.Device) (net.IP, error)
+	IP(ctx context.Context, obj *common.Device) (*common.IP, error)
 	Now(ctx context.Context, obj *common.Device) (*common.Time, error)
 	Description(ctx context.Context, obj *common.Device) (*string, error)
-	Count(ctx context.Context, obj *common.Device, param int64) (string, error)
+	Count(ctx context.Context, obj *common.Device, param string) (string, error)
 }
 type MutationResolver interface {
 	Login(ctx context.Context, input UserLoginInput) (*string, error)
@@ -116,7 +115,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Device.Count(childComplexity, args["param"].(int64)), true
+		return e.complexity.Device.Count(childComplexity, args["param"].(string)), true
 
 	case "Device.description":
 		if e.complexity.Device.Description == nil {
@@ -392,10 +391,10 @@ func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[st
 func (ec *executionContext) field_Device_count_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int64
+	var arg0 string
 	if tmp, ok := rawArgs["param"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("param"))
-		arg0, err = ec.unmarshalNInt642int64(ctx, tmp)
+		arg0, err = ec.unmarshalNInt642string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -547,9 +546,9 @@ func (ec *executionContext) _Device_ip(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(net.IP)
+	res := resTmp.(*common.IP)
 	fc.Result = res
-	return ec.marshalNIP2netᚐIP(ctx, field.Selections, res)
+	return ec.marshalNIP2ᚖappᚋcommonᚐIP(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Device_now(ctx context.Context, field graphql.CollectedField, obj *common.Device) (ret graphql.Marshaler) {
@@ -644,7 +643,7 @@ func (ec *executionContext) _Device_count(ctx context.Context, field graphql.Col
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Device().Count(rctx, obj, args["param"].(int64))
+		return ec.resolvers.Device().Count(rctx, obj, args["param"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2583,25 +2582,30 @@ func (ec *executionContext) marshalNDevice2ᚖappᚋcommonᚐDevice(ctx context.
 	return ec._Device(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNIP2netᚐIP(ctx context.Context, v interface{}) (net.IP, error) {
-	res, err := common.UnmarshalIP(v)
+func (ec *executionContext) unmarshalNIP2appᚋcommonᚐIP(ctx context.Context, v interface{}) (common.IP, error) {
+	var res common.IP
+	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNIP2netᚐIP(ctx context.Context, sel ast.SelectionSet, v net.IP) graphql.Marshaler {
+func (ec *executionContext) marshalNIP2appᚋcommonᚐIP(ctx context.Context, sel ast.SelectionSet, v common.IP) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNIP2ᚖappᚋcommonᚐIP(ctx context.Context, v interface{}) (*common.IP, error) {
+	var res = new(common.IP)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNIP2ᚖappᚋcommonᚐIP(ctx context.Context, sel ast.SelectionSet, v *common.IP) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	res := common.MarshalIP(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
+	return v
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
@@ -2619,13 +2623,13 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) unmarshalNInt642int64(ctx context.Context, v interface{}) (int64, error) {
-	res, err := common.UnmarshalInt64(v)
+func (ec *executionContext) unmarshalNInt642string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNInt642int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
-	res := common.MarshalInt64(v)
+func (ec *executionContext) marshalNInt642string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalString(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

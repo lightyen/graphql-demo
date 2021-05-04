@@ -5,21 +5,22 @@ import (
 	"io"
 	"net"
 	"strconv"
-
-	"github.com/99designs/gqlgen/graphql"
 )
 
-func MarshalIP(ip net.IP) graphql.Marshaler {
-	return graphql.WriterFunc(func(w io.Writer) {
-		_, _ = w.Write([]byte(strconv.Quote(ip.String())))
-	})
+type IP struct {
+	net.IP
 }
 
-func UnmarshalIP(v interface{}) (net.IP, error) {
+func (ip IP) MarshalGQL(w io.Writer) {
+	_, _ = w.Write([]byte(strconv.Quote(ip.String())))
+}
+
+func (ip *IP) UnmarshalGQL(v interface{}) error {
 	switch v := v.(type) {
 	case string:
-		return net.ParseIP(v), nil
+		ip.IP = net.ParseIP(v)
+		return nil
 	default:
-		return nil, fmt.Errorf("TypeError: %T is not an IP", v)
+		return fmt.Errorf("TypeError: %T is not an IP", v)
 	}
 }

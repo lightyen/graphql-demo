@@ -11,8 +11,8 @@ import (
 	"net"
 )
 
-func (r *deviceResolver) IP(ctx context.Context, obj *common.Device) (net.IP, error) {
-	return net.ParseIP("127.0.0.1"), nil
+func (r *deviceResolver) IP(ctx context.Context, obj *common.Device) (*common.IP, error) {
+	return &common.IP{IP: net.ParseIP("127.0.0.1")}, nil
 }
 
 func (r *deviceResolver) Now(ctx context.Context, obj *common.Device) (*common.Time, error) {
@@ -25,7 +25,7 @@ func (r *deviceResolver) Description(ctx context.Context, obj *common.Device) (*
 	return &s, nil
 }
 
-func (r *deviceResolver) Count(ctx context.Context, obj *common.Device, param int64) (string, error) {
+func (r *deviceResolver) Count(ctx context.Context, obj *common.Device, param string) (string, error) {
 	return "", fmt.Errorf("not implemented")
 }
 
