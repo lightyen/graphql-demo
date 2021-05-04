@@ -1,10 +1,12 @@
 package graphql
 
 import (
+	"app/common"
 	"app/graphql/generated"
 	"app/internal/auth"
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -28,7 +30,17 @@ type CustomClaims struct {
 }
 
 func NewHandler() gin.HandlerFunc {
-	resolver := &Resolver{}
+	resolver := &Resolver{
+		hub: make(map[chan *common.Time]struct{}),
+	}
+
+	go func(r *Resolver) {
+		tick := time.NewTicker(time.Second)
+		for now := range tick.C {
+			r.NotifyTime(&common.Time{Time: now})
+		}
+	}(resolver)
+
 	auth := func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 		c := ctx.Value(GinContextKey{}).(*gin.Context)
 		tokenString, err := c.Cookie("app_token")

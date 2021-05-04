@@ -12,7 +12,10 @@ func NewRouter() http.Handler {
 	e := gin.Default()
 
 	// handle graphql
-	e.POST("/graphql", graphql.NewHandler())
+	h := graphql.NewHandler()
+	e.POST("/graphql", h)
+	e.GET("/subscriptions", h)
+	e.POST("/subscriptions", h)
 
 	// handle graphql subscription(websocket)
 	// e.GET("/subscriptions", func(c *gin.Context) {
