@@ -4,14 +4,14 @@ package graphql
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
-	"app/common"
 	"app/graphql/generated"
+	"app/model"
 	"context"
 	"fmt"
 )
 
-func (r *subscriptionResolver) NotificationTime(ctx context.Context) (<-chan *common.Time, error) {
-	ch := make(chan *common.Time, 1)
+func (r *subscriptionResolver) NotificationTime(ctx context.Context) (<-chan *model.Time, error) {
+	ch := make(chan *model.Time, 1)
 
 	r.mutex.Lock()
 	defer r.mutex.Unlock()

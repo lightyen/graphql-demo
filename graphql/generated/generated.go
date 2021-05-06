@@ -3,7 +3,7 @@
 package generated
 
 import (
-	"app/common"
+	"app/model"
 	"bytes"
 	"context"
 	"errors"
@@ -69,7 +69,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Device func(childComplexity int) int
-		Test   func(childComplexity int, id common.UUID) int
+		Test   func(childComplexity int, id model.UUID) int
 	}
 
 	Subscription struct {
@@ -78,10 +78,10 @@ type ComplexityRoot struct {
 }
 
 type DeviceResolver interface {
-	IP(ctx context.Context, obj *common.Device) (*common.IP, error)
-	Now(ctx context.Context, obj *common.Device) (*common.Time, error)
-	Description(ctx context.Context, obj *common.Device) (*string, error)
-	Count(ctx context.Context, obj *common.Device, param string) (string, error)
+	IP(ctx context.Context, obj *model.Device) (*model.IP, error)
+	Now(ctx context.Context, obj *model.Device) (*model.Time, error)
+
+	Count(ctx context.Context, obj *model.Device, param string) (string, error)
 }
 type MutationResolver interface {
 	Login(ctx context.Context, input UserLoginInput) (*string, error)
@@ -92,11 +92,11 @@ type OperationsResolver interface {
 	Show(ctx context.Context, obj *Operations, input int) (*int, error)
 }
 type QueryResolver interface {
-	Device(ctx context.Context) (*common.Device, error)
-	Test(ctx context.Context, id common.UUID) (interface{}, error)
+	Device(ctx context.Context) (*model.Device, error)
+	Test(ctx context.Context, id model.UUID) (interface{}, error)
 }
 type SubscriptionResolver interface {
-	NotificationTime(ctx context.Context) (<-chan *common.Time, error)
+	NotificationTime(ctx context.Context) (<-chan *model.Time, error)
 }
 
 type executableSchema struct {
@@ -207,7 +207,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Test(childComplexity, args["id"].(common.UUID)), true
+		return e.complexity.Query.Test(childComplexity, args["id"].(model.UUID)), true
 
 	case "Subscription.notificationTime":
 		if e.complexity.Subscription.NotificationTime == nil {
@@ -297,7 +297,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "schema/device.gql", Input: `type Device {
+	{Name: "graphql/schema/device.gql", Input: `type Device {
 	"""
 	Current IP.
 	"""
@@ -316,7 +316,7 @@ var sources = []*ast.Source{
 	count(param: Int64!): String!
 }
 `, BuiltIn: false},
-	{Name: "schema/mutation.gql", Input: `enum RoleEnumType {
+	{Name: "graphql/schema/mutation.gql", Input: `enum RoleEnumType {
   ADMINISTRATOR
   NORMAL
 }
@@ -343,12 +343,12 @@ type Mutation {
 	operations: Operations
 	singleUpload(file: Upload!): String!
 }`, BuiltIn: false},
-	{Name: "schema/query.gql", Input: `type Query {
+	{Name: "graphql/schema/query.gql", Input: `type Query {
 	device: Device!
 	test(id: UUID!): Void
 }
 `, BuiltIn: false},
-	{Name: "schema/scalar.gql", Input: `"""
+	{Name: "graphql/schema/scalar.gql", Input: `"""
 Represents IP address.
 """
 scalar IP
@@ -399,7 +399,7 @@ Represents an upload File.
 scalar Upload
 
 scalar UUID`, BuiltIn: false},
-	{Name: "schema/subscription.gql", Input: `type Subscription {
+	{Name: "graphql/schema/subscription.gql", Input: `type Subscription {
     notificationTime: Time!
 }`, BuiltIn: false},
 }
@@ -502,10 +502,10 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_test_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 common.UUID
+	var arg0 model.UUID
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNUUID2appᚋcommonᚐUUID(ctx, tmp)
+		arg0, err = ec.unmarshalNUUID2appᚋmodelᚐUUID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -552,7 +552,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Device_ip(ctx context.Context, field graphql.CollectedField, obj *common.Device) (ret graphql.Marshaler) {
+func (ec *executionContext) _Device_ip(ctx context.Context, field graphql.CollectedField, obj *model.Device) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -582,12 +582,12 @@ func (ec *executionContext) _Device_ip(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*common.IP)
+	res := resTmp.(*model.IP)
 	fc.Result = res
-	return ec.marshalNIP2ᚖappᚋcommonᚐIP(ctx, field.Selections, res)
+	return ec.marshalNIP2ᚖappᚋmodelᚐIP(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Device_now(ctx context.Context, field graphql.CollectedField, obj *common.Device) (ret graphql.Marshaler) {
+func (ec *executionContext) _Device_now(ctx context.Context, field graphql.CollectedField, obj *model.Device) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -617,12 +617,12 @@ func (ec *executionContext) _Device_now(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*common.Time)
+	res := resTmp.(*model.Time)
 	fc.Result = res
-	return ec.marshalNTime2ᚖappᚋcommonᚐTime(ctx, field.Selections, res)
+	return ec.marshalNTime2ᚖappᚋmodelᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Device_description(ctx context.Context, field graphql.CollectedField, obj *common.Device) (ret graphql.Marshaler) {
+func (ec *executionContext) _Device_description(ctx context.Context, field graphql.CollectedField, obj *model.Device) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -633,14 +633,14 @@ func (ec *executionContext) _Device_description(ctx context.Context, field graph
 		Object:     "Device",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Device().Description(rctx, obj)
+		return obj.Description, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -649,12 +649,12 @@ func (ec *executionContext) _Device_description(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Device_count(ctx context.Context, field graphql.CollectedField, obj *common.Device) (ret graphql.Marshaler) {
+func (ec *executionContext) _Device_count(ctx context.Context, field graphql.CollectedField, obj *model.Device) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -908,9 +908,9 @@ func (ec *executionContext) _Query_device(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*common.Device)
+	res := resTmp.(*model.Device)
 	fc.Result = res
-	return ec.marshalNDevice2ᚖappᚋcommonᚐDevice(ctx, field.Selections, res)
+	return ec.marshalNDevice2ᚖappᚋmodelᚐDevice(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_test(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -938,7 +938,7 @@ func (ec *executionContext) _Query_test(ctx context.Context, field graphql.Colle
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Test(rctx, args["id"].(common.UUID))
+		return ec.resolvers.Query().Test(rctx, args["id"].(model.UUID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1054,7 +1054,7 @@ func (ec *executionContext) _Subscription_notificationTime(ctx context.Context, 
 		return nil
 	}
 	return func() graphql.Marshaler {
-		res, ok := <-resTmp.(<-chan *common.Time)
+		res, ok := <-resTmp.(<-chan *model.Time)
 		if !ok {
 			return nil
 		}
@@ -1062,7 +1062,7 @@ func (ec *executionContext) _Subscription_notificationTime(ctx context.Context, 
 			w.Write([]byte{'{'})
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
-			ec.marshalNTime2ᚖappᚋcommonᚐTime(ctx, field.Selections, res).MarshalGQL(w)
+			ec.marshalNTime2ᚖappᚋmodelᚐTime(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -2193,7 +2193,7 @@ func (ec *executionContext) unmarshalInputUserLoginInput(ctx context.Context, ob
 
 var deviceImplementors = []string{"Device"}
 
-func (ec *executionContext) _Device(ctx context.Context, sel ast.SelectionSet, obj *common.Device) graphql.Marshaler {
+func (ec *executionContext) _Device(ctx context.Context, sel ast.SelectionSet, obj *model.Device) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, deviceImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -2231,16 +2231,7 @@ func (ec *executionContext) _Device(ctx context.Context, sel ast.SelectionSet, o
 				return res
 			})
 		case "description":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Device_description(ctx, field, obj)
-				return res
-			})
+			out.Values[i] = ec._Device_description(ctx, field, obj)
 		case "count":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -2669,11 +2660,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNDevice2appᚋcommonᚐDevice(ctx context.Context, sel ast.SelectionSet, v common.Device) graphql.Marshaler {
+func (ec *executionContext) marshalNDevice2appᚋmodelᚐDevice(ctx context.Context, sel ast.SelectionSet, v model.Device) graphql.Marshaler {
 	return ec._Device(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNDevice2ᚖappᚋcommonᚐDevice(ctx context.Context, sel ast.SelectionSet, v *common.Device) graphql.Marshaler {
+func (ec *executionContext) marshalNDevice2ᚖappᚋmodelᚐDevice(ctx context.Context, sel ast.SelectionSet, v *model.Device) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -2683,23 +2674,23 @@ func (ec *executionContext) marshalNDevice2ᚖappᚋcommonᚐDevice(ctx context.
 	return ec._Device(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNIP2appᚋcommonᚐIP(ctx context.Context, v interface{}) (common.IP, error) {
-	var res common.IP
+func (ec *executionContext) unmarshalNIP2appᚋmodelᚐIP(ctx context.Context, v interface{}) (model.IP, error) {
+	var res model.IP
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNIP2appᚋcommonᚐIP(ctx context.Context, sel ast.SelectionSet, v common.IP) graphql.Marshaler {
+func (ec *executionContext) marshalNIP2appᚋmodelᚐIP(ctx context.Context, sel ast.SelectionSet, v model.IP) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNIP2ᚖappᚋcommonᚐIP(ctx context.Context, v interface{}) (*common.IP, error) {
-	var res = new(common.IP)
+func (ec *executionContext) unmarshalNIP2ᚖappᚋmodelᚐIP(ctx context.Context, v interface{}) (*model.IP, error) {
+	var res = new(model.IP)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNIP2ᚖappᚋcommonᚐIP(ctx context.Context, sel ast.SelectionSet, v *common.IP) graphql.Marshaler {
+func (ec *executionContext) marshalNIP2ᚖappᚋmodelᚐIP(ctx context.Context, sel ast.SelectionSet, v *model.IP) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -2764,23 +2755,23 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) unmarshalNTime2appᚋcommonᚐTime(ctx context.Context, v interface{}) (common.Time, error) {
-	var res common.Time
+func (ec *executionContext) unmarshalNTime2appᚋmodelᚐTime(ctx context.Context, v interface{}) (model.Time, error) {
+	var res model.Time
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNTime2appᚋcommonᚐTime(ctx context.Context, sel ast.SelectionSet, v common.Time) graphql.Marshaler {
+func (ec *executionContext) marshalNTime2appᚋmodelᚐTime(ctx context.Context, sel ast.SelectionSet, v model.Time) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNTime2ᚖappᚋcommonᚐTime(ctx context.Context, v interface{}) (*common.Time, error) {
-	var res = new(common.Time)
+func (ec *executionContext) unmarshalNTime2ᚖappᚋmodelᚐTime(ctx context.Context, v interface{}) (*model.Time, error) {
+	var res = new(model.Time)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNTime2ᚖappᚋcommonᚐTime(ctx context.Context, sel ast.SelectionSet, v *common.Time) graphql.Marshaler {
+func (ec *executionContext) marshalNTime2ᚖappᚋmodelᚐTime(ctx context.Context, sel ast.SelectionSet, v *model.Time) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -2790,13 +2781,13 @@ func (ec *executionContext) marshalNTime2ᚖappᚋcommonᚐTime(ctx context.Cont
 	return v
 }
 
-func (ec *executionContext) unmarshalNUUID2appᚋcommonᚐUUID(ctx context.Context, v interface{}) (common.UUID, error) {
-	var res common.UUID
+func (ec *executionContext) unmarshalNUUID2appᚋmodelᚐUUID(ctx context.Context, v interface{}) (model.UUID, error) {
+	var res model.UUID
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNUUID2appᚋcommonᚐUUID(ctx context.Context, sel ast.SelectionSet, v common.UUID) graphql.Marshaler {
+func (ec *executionContext) marshalNUUID2appᚋmodelᚐUUID(ctx context.Context, sel ast.SelectionSet, v model.UUID) graphql.Marshaler {
 	return v
 }
 
@@ -3123,7 +3114,7 @@ func (ec *executionContext) unmarshalOVoid2interface(ctx context.Context, v inte
 	if v == nil {
 		return nil, nil
 	}
-	res, err := common.UnmarshalVoid(v)
+	res, err := model.UnmarshalVoid(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -3131,7 +3122,7 @@ func (ec *executionContext) marshalOVoid2interface(ctx context.Context, sel ast.
 	if v == nil {
 		return graphql.Null
 	}
-	return common.MarshalVoid(v)
+	return model.MarshalVoid(v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

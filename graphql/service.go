@@ -1,16 +1,16 @@
 package graphql
 
 import (
-	"app/common"
 	"app/graphql/generated"
-	"app/internal/auth"
+	"app/jwt"
+	"app/model"
 	"context"
 	"fmt"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/dgrijalva/jwt-go"
+	jwtgo "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,18 +26,18 @@ func GinContextToContextMiddleware() gin.HandlerFunc {
 
 type CustomClaims struct {
 	Role generated.RoleEnumType
-	jwt.StandardClaims
+	jwtgo.StandardClaims
 }
 
 func NewHandler() gin.HandlerFunc {
 	resolver := &Resolver{
-		hub: make(map[chan *common.Time]struct{}),
+		hub: make(map[chan *model.Time]struct{}),
 	}
 
 	go func(r *Resolver) {
 		tick := time.NewTicker(time.Second)
 		for now := range tick.C {
-			r.NotifyTime(&common.Time{Time: now})
+			r.NotifyTime(&model.Time{Time: now})
 		}
 	}(resolver)
 
@@ -48,7 +48,7 @@ func NewHandler() gin.HandlerFunc {
 			return nil, ErrAuthentication
 		}
 		claims := &CustomClaims{}
-		if err := auth.VerifyJwt(tokenString, claims); err != nil {
+		if err := jwt.Verify(tokenString, claims); err != nil {
 			return nil, ErrAuthentication
 		}
 		return next(context.WithValue(ctx, RoleKey{}, claims.Role))
@@ -56,7 +56,7 @@ func NewHandler() gin.HandlerFunc {
 	hasRole := func(ctx context.Context, obj interface{}, next graphql.Resolver, role generated.RoleEnumType) (res interface{}, err error) {
 		userRole := ctx.Value(RoleKey{}).(generated.RoleEnumType)
 		if role == generated.RoleEnumTypeAdministrator && userRole != generated.RoleEnumTypeAdministrator {
-			return nil, ErrForbidden
+			return nil, ErrAuthorization
 		}
 		return next(ctx)
 	}

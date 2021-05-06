@@ -4,17 +4,17 @@ package graphql
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
-	"app/common"
 	"app/graphql/generated"
+	"app/model"
 	"context"
 )
 
-func (r *queryResolver) Device(ctx context.Context) (*common.Device, error) {
-	return &common.Device{}, nil
+func (r *queryResolver) Device(ctx context.Context) (*model.Device, error) {
+	return &model.Device{}, nil
 }
 
-func (r *queryResolver) Test(ctx context.Context, id common.UUID) (interface{}, error) {
-	return &common.Void{}, nil
+func (r *queryResolver) Test(ctx context.Context, id model.UUID) (interface{}, error) {
+	return &model.Void{}, nil
 }
 
 // Query returns generated.QueryResolver implementation.

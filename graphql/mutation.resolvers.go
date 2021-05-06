@@ -5,13 +5,13 @@ package graphql
 
 import (
 	"app/graphql/generated"
-	"app/internal/auth"
+	"app/jwt"
 	"context"
 	"net/http"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
-	jwt "github.com/dgrijalva/jwt-go"
+	jwtgo "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,9 +30,9 @@ func (r *mutationResolver) Login(ctx context.Context, input generated.UserLoginI
 		role = generated.RoleEnumTypeAdministrator
 	}
 	now := time.Now()
-	tokenString, err := auth.SignJwt(&CustomClaims{
+	tokenString, err := jwt.Sign(&CustomClaims{
 		Role: role,
-		StandardClaims: jwt.StandardClaims{
+		StandardClaims: jwtgo.StandardClaims{
 			IssuedAt:  now.Unix(),
 			ExpiresAt: now.Add(600 * time.Second).Unix(),
 			Issuer:    "lightyen",

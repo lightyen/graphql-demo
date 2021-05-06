@@ -1,10 +1,10 @@
-package auth
+package jwt
 
 import (
 	"crypto/ed25519"
 	"errors"
 
-	"github.com/dgrijalva/jwt-go"
+	jwtgo "github.com/dgrijalva/jwt-go"
 )
 
 var (
@@ -20,7 +20,7 @@ type SigningMethodEdDSA struct {
 
 func init() {
 	signingMethodED25519 = &SigningMethodEdDSA{Name: "EdDSA"}
-	jwt.RegisterSigningMethod(signingMethodED25519.Alg(), func() jwt.SigningMethod {
+	jwtgo.RegisterSigningMethod(signingMethodED25519.Alg(), func() jwtgo.SigningMethod {
 		return signingMethodED25519
 	})
 	var err error
@@ -39,7 +39,7 @@ func (m *SigningMethodEdDSA) Verify(signingString string, signature string, key 
 
 	// Decode the signature
 	var sig []byte
-	if sig, err = jwt.DecodeSegment(signature); err != nil {
+	if sig, err = jwtgo.DecodeSegment(signature); err != nil {
 		return err
 	}
 
@@ -47,11 +47,11 @@ func (m *SigningMethodEdDSA) Verify(signingString string, signature string, key 
 	var publicKey ed25519.PublicKey
 	var ok bool
 	if publicKey, ok = key.(ed25519.PublicKey); !ok {
-		return jwt.ErrInvalidKeyType
+		return jwtgo.ErrInvalidKeyType
 	}
 
 	if len(publicKey) != ed25519.PublicKeySize {
-		return jwt.ErrInvalidKey
+		return jwtgo.ErrInvalidKey
 	}
 
 	if ok := ed25519.Verify(publicKey, []byte(signingString), sig); !ok {
@@ -66,14 +66,14 @@ func (m *SigningMethodEdDSA) Sign(signingString string, key interface{}) (str st
 	var privateKey ed25519.PrivateKey
 	var ok bool
 	if privateKey, ok = key.(ed25519.PrivateKey); !ok {
-		return "", jwt.ErrInvalidKeyType
+		return "", jwtgo.ErrInvalidKeyType
 	}
 
 	if len(privateKey) != ed25519.PrivateKeySize {
-		return "", jwt.ErrInvalidKey
+		return "", jwtgo.ErrInvalidKey
 	}
 
 	// Sign the string and return the encoded result
 	sig := ed25519.Sign(privateKey, []byte(signingString))
-	return jwt.EncodeSegment(sig), nil
+	return jwtgo.EncodeSegment(sig), nil
 }

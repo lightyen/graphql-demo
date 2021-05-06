@@ -1,7 +1,7 @@
 package graphql
 
 import (
-	"app/common"
+	"app/model"
 	"sync"
 )
 
@@ -11,10 +11,10 @@ import (
 
 type Resolver struct {
 	mutex sync.RWMutex
-	hub   map[chan *common.Time]struct{}
+	hub   map[chan *model.Time]struct{}
 }
 
-func (r *Resolver) NotifyTime(t *common.Time) {
+func (r *Resolver) NotifyTime(t *model.Time) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 	for ch := range r.hub {

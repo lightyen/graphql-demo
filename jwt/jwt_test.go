@@ -1,21 +1,21 @@
-package auth
+package jwt
 
 import (
 	"testing"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	jwtgo "github.com/dgrijalva/jwt-go"
 )
 
 func TestExample(t *testing.T) {
 	type CustomClaims struct {
 		Role string
-		jwt.StandardClaims
+		jwtgo.StandardClaims
 	}
 
-	tokenString, err := SignJwt(&CustomClaims{
+	tokenString, err := Sign(&CustomClaims{
 		Role: "NORMAL",
-		StandardClaims: jwt.StandardClaims{
+		StandardClaims: jwtgo.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
 			ExpiresAt: time.Now().Unix(),
 			Issuer:    "lightyen",
@@ -27,7 +27,7 @@ func TestExample(t *testing.T) {
 	}
 
 	c := &CustomClaims{}
-	if err := VerifyJwt(tokenString, c); err != nil {
+	if err := Verify(tokenString, c); err != nil {
 		t.Fatal(err)
 	}
 }

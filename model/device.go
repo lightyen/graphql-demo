@@ -1,11 +1,9 @@
-package common
+package model
 
 import (
 	"net"
 	"time"
 )
-
-// Reference: https://gqlgen.com/reference/scalars/
 
 type Device struct {
 	// Current IP.
