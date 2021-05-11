@@ -12,18 +12,13 @@ import (
 
 func (r *subscriptionResolver) NotificationTime(ctx context.Context) (<-chan *model.Time, error) {
 	ch := make(chan *model.Time, 1)
-
-	r.mutex.Lock()
-	defer r.mutex.Unlock()
-	r.hub[ch] = struct{}{}
-	fmt.Println("websocket create: len = ", len(r.hub))
+	r.AddPeer(ch, &PeerInfo{ctx})
+	fmt.Println("websocket create: len = ", r.PeerCount())
 
 	go func() {
 		<-ctx.Done()
-		r.mutex.Lock()
-		defer r.mutex.Unlock()
-		delete(r.hub, ch)
-		fmt.Println("websocket close: len = ", len(r.hub))
+		r.RemovePeer(ch)
+		fmt.Println("websocket close: len = ", r.PeerCount())
 	}()
 
 	return ch, nil

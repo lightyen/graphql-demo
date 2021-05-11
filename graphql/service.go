@@ -29,20 +29,26 @@ type CustomClaims struct {
 	jwtgo.StandardClaims
 }
 
+func GetGinContext(ctx context.Context) (*gin.Context, bool) {
+	c, ok := ctx.Value(GinContextKey{}).(*gin.Context)
+	return c, ok
+}
+
 func NewHandler() gin.HandlerFunc {
-	resolver := &Resolver{
-		hub: make(map[chan *model.Time]struct{}),
-	}
+	resolver := &Resolver{}
 
 	go func(r *Resolver) {
 		tick := time.NewTicker(time.Second)
 		for now := range tick.C {
-			r.NotifyTime(&model.Time{Time: now})
+			r.BroadcastTime(&model.Time{Time: now})
 		}
 	}(resolver)
 
 	auth := func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-		c := ctx.Value(GinContextKey{}).(*gin.Context)
+		c, ok := GetGinContext(ctx)
+		if !ok {
+			return nil, ErrAuthentication
+		}
 		tokenString, err := c.Cookie("app_token")
 		if err != nil {
 			return nil, ErrAuthentication
