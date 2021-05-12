@@ -12,7 +12,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	jwtgo "github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
 )
 
 func (r *mutationResolver) Login(ctx context.Context, input generated.UserLoginInput) (*string, error) {
@@ -23,7 +22,10 @@ func (r *mutationResolver) Login(ctx context.Context, input generated.UserLoginI
 	if *input.Password != "helloworld" {
 		return nil, ErrAuthentication
 	}
-	c := ctx.Value(GinContextKey{}).(*gin.Context)
+	c, ok := GetGinContext(ctx)
+	if !ok {
+		return nil, ErrAuthentication
+	}
 
 	role := generated.RoleEnumTypeNormal
 	if input.Username == "lightyen" {

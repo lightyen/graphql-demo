@@ -14,6 +14,10 @@ func (r *queryResolver) Device(ctx context.Context) (*model.Device, error) {
 }
 
 func (r *queryResolver) Test(ctx context.Context, id model.UUID) (interface{}, error) {
+	bs := make([]byte, 0)
+	if bs[3] == 5 {
+		//
+	}
 	return &model.Void{}, nil
 }
 

@@ -18,6 +18,7 @@ func (r *subscriptionResolver) NotificationTime(ctx context.Context) (<-chan *mo
 	go func() {
 		<-ctx.Done()
 		r.RemovePeer(ch)
+		close(ch)
 		fmt.Println("websocket close: len = ", r.PeerCount())
 	}()
 
