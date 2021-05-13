@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.js": "/graphql/static/js/main.6ad8ecc8.chunk.js",
+    "main.js.map": "/graphql/static/js/main.6ad8ecc8.chunk.js.map",
+    "runtime-main.js": "/graphql/static/js/runtime-main.62daebdc.js",
+    "runtime-main.js.map": "/graphql/static/js/runtime-main.62daebdc.js.map",
+    "static/css/2.d0b7e323.chunk.css": "/graphql/static/css/2.d0b7e323.chunk.css",
+    "static/js/2.dd57ec4a.chunk.js": "/graphql/static/js/2.dd57ec4a.chunk.js",
+    "static/js/2.dd57ec4a.chunk.js.map": "/graphql/static/js/2.dd57ec4a.chunk.js.map",
+    "index.html": "/graphql/index.html",
+    "precache-manifest.5b5f66c360e5555d2f494ca0ca4273ef.js": "/graphql/precache-manifest.5b5f66c360e5555d2f494ca0ca4273ef.js",
+    "service-worker.js": "/graphql/service-worker.js",
+    "static/css/2.d0b7e323.chunk.css.map": "/graphql/static/css/2.d0b7e323.chunk.css.map",
+    "static/js/2.dd57ec4a.chunk.js.LICENSE.txt": "/graphql/static/js/2.dd57ec4a.chunk.js.LICENSE.txt",
+    "static/media/logo.png": "/graphql/static/media/logo.57ee3b60.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.62daebdc.js",
+    "static/css/2.d0b7e323.chunk.css",
+    "static/js/2.dd57ec4a.chunk.js",
+    "static/js/main.6ad8ecc8.chunk.js"
+  ]
+}

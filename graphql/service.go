@@ -6,6 +6,7 @@ import (
 	"app/model"
 	"bytes"
 	"context"
+	"embed"
 	"errors"
 	"fmt"
 	"net/http"
@@ -118,20 +119,31 @@ func newHandler() gin.HandlerFunc {
 	}
 }
 
+//go:embed playground/*
+var playground embed.FS
+
+//go:embed playground/index.html
+var playgroundIndex embed.FS
+
 func Service() http.Handler {
-	e := gin.Default()
+	e := gin.New()
 	gql := newHandler()
 	e.POST("/graphql", gql)
-	web := static.Serve("/graphql", static.LocalFile("web", false))
+	web := static.Serve("/graphql", embedFolder(playground, "playground"))
+	e.NoRoute(web)
 	e.GET("/graphql", func(c *gin.Context) {
 		accept := c.Request.Header.Get("Accept")
 		if strings.Contains(accept, "text/html") {
-			web(c)
+			data, err := playgroundIndex.ReadFile("playground/index.html")
+			if err != nil {
+				c.String(http.StatusNotFound, "404 not found")
+				return
+			}
+			c.Data(http.StatusOK, "text/html", data)
 			return
 		}
 		gql(c)
 	})
 	e.GET("/", func(c *gin.Context) { c.Redirect(http.StatusFound, "/graphql") })
-	e.NoRoute(web)
 	return e
 }
